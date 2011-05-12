@@ -1,0 +1,50 @@
+
+<html>
+    <head>
+        <title>Logbook</title>
+        <style>
+body {
+  text-align: center;
+  margin: 1em 0 0 0;
+  vertical-align: middle;
+  font-size: 26pt;
+  font-style: normal;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0;
+  word-spacing: 0;
+  /* line-height: 1.3em; */
+}
+#content {
+  width: 760px;
+  text-align: left;
+  margin: 1em auto;
+}
+        </style>
+    </head> 
+    <body>
+        <div id="content">
+<p><a href="/">Index</a></p>
+{% for (when, timeslot, messages) in entries %}
+<h1>{{ when }} - 
+{% if timeslot == 0 %}
+evening
+{% elif timeslot == 1 %}
+morning
+{% else %}
+afternoon
+{% end %}
+</h1>
+
+{% for ((entry_id, entry_date, message, length), tags, users) in messages %}
+<p>{{ message }}</p>
+{% if len(tags) > 0 %}
+<p>{% for tag in tags %}<a href="/archive?tag={{ tag[1] }}">#{{ tag[1] }}</a> {% end %}{% end %}{% if len(users) > 0 %}{% for user in users %}<a href="/archive?person={{ user[1] }}">@{{ user[1] }}</a> {% end %}</p>
+{% end %}
+{% end %}
+{% end %}
+</form>
+        </div>
+    </body>
+</html> 

@@ -1,0 +1,85 @@
+<html>
+    <head>
+        <title>Logbook</title>
+        <style>
+body {
+  text-align: center;
+  margin: 1em 0 0 0;
+  vertical-align: middle;
+  font-size: 26pt;
+  font-style: normal;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: 0;
+  word-spacing: 0;
+  /* line-height: 1.3em; */
+}
+#content {
+  width: 760px;
+  text-align: left;
+  margin: 1em auto;
+}
+        </style>
+    </head> 
+    <body onLoad="focus();someform.message.focus()">
+        <div id="content">
+<style>
+.wrapper {
+    padding-bottom: 1em;
+}
+.input {
+    position: relative;
+    display: inline-block;
+    height: 2em;
+    padding-bottom: 1em;
+}
+.input label {
+    display: block;
+    font-size: 50%;
+    font-weight: bold;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+}
+input {
+	border: none;
+	border-bottom: 1px solid black;
+	font-size: 100%;
+}
+
+input[type=submit] {
+	border: 1px solid black;
+	font-size: 100%;
+}
+
+textarea {
+	border: none;
+	font-size: 100%;
+}
+
+textarea:focus {
+	outline: 0 none;
+}
+
+/*
+#basics { border-left: 3px solid blue; }
+*/
+</style>
+<form name="someform" method="post" action="/">
+    <div class="wrapper">
+    What did you do?
+    <textarea name="message" cols="30" rows="3"></textarea>
+    </div>
+    <div class="input">
+        <input type="text" name="extra" style="width: 500px;" />
+        <label for="extra">(@people "@other people" #things "!Yesterday at 1:30pm")</label>
+    </div>
+    <div>
+    <input type="submit" value="Update" />
+    </div>
+</form>
+<p><a href="archive">Archive</a></p>
+        </div>
+    </body>
+</html> 
