@@ -22,12 +22,12 @@ body {
   margin: 1em auto;
 }
         </style>
-    </head> 
+    </head>
     <body>
         <div id="content">
 <p><a href="/">Index</a></p>
 {% for (when, timeslot, messages) in entries %}
-<h1>{{ when }} - 
+<h1>{{ when }} -
 {% if timeslot == 0 %}
 evening
 {% elif timeslot == 1 %}
@@ -44,7 +44,10 @@ afternoon
 {% end %}
 {% end %}
 {% end %}
+<form name="archive" method="post" action="/archive">
+  <input type="hidden" name="days" value="{{ days + 7 }}"/>
+  <input type="submit" value="Show More" />
 </form>
         </div>
     </body>
-</html> 
+</html>
