@@ -18,7 +18,7 @@ import logbook.parser
 import git.op
 
 import smtplib
- 
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -76,12 +76,16 @@ class MainHandler(tornado.web.RequestHandler):
                         tmpd = git.op.clone(git_url)
                         commits = git.op.log(tmpd)
                         for commit in commits:
-                                print commit
-                                task = commit[0]
+                                task = False
                                 users = [commit[1]]
                                 message = commit[3]
                                 when = parse(commit[2], fuzzy=True)
                                 tags = [word[1:] for word in message if word[0] == "#"]
+                                # add commit hash as a tag
+                                tags.append(commit[0])
+                                # add name of the repo as a tag
+                                # (assumes it is the basename of the path)
+                                tags.append(os.path.basename(git_url).split('.git')[0])
                                 time = False
                                 saveEntry((message, (tags, users, task, time, when)))
                 else:
@@ -138,7 +142,7 @@ class ArchiveHandler(tornado.web.RequestHandler):
 class EmailHandler(ArchiveHandler):
 	def get(self):
 		entries = self.get_entries(ARCHIVE_DAYS)
-				
+
 		loader = tornado.template.Loader("./")
 		html_body = loader.load("archive.html").generate(entries = entries, today = datetime.date.today())
 
