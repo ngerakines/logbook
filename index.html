@@ -21,7 +21,7 @@ body {
   margin: 1em auto;
 }
         </style>
-    </head> 
+    </head>
     <body onLoad="focus();someform.message.focus()">
         <div id="content">
 <style>
@@ -79,7 +79,16 @@ textarea:focus {
     <input type="submit" value="Update" />
     </div>
 </form>
+<form name="otherform" method="post" action="/">
+  <div class="wrapper">
+    Git URL:
+    <input type="text" name="git_url"/>
+    </div>
+    <div>
+    <input type="submit" value="Import Git" />
+    </div>
+</form>
 <p><a href="archive">Archive</a></p>
         </div>
     </body>
-</html> 
+</html>

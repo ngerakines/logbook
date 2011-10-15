@@ -15,9 +15,10 @@ import tornado.web
 import tornado.template
 
 import logbook.parser
+import git.op
 
 import smtplib
- 
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -26,6 +27,8 @@ morning = 1
 afternoon = 2
 
 LOGBOOK_PATH = os.environ.get('LOGBOOK_PATH', '/tmp/logbook.sqlite')
+
+ARCHIVE_DAYS = 7
 
 isNew = False
 if os.path.exists(LOGBOOK_PATH) == False:
@@ -66,12 +69,31 @@ if isNew:
 class MainHandler(tornado.web.RequestHandler):
 	def get(self):
 		self.render('index.html')
+
 	def post(self):
-		message = self.get_argument("message")
-		extra = self.get_argument("extra", "")
-		(tags, users, task, time, when) = parseExtra(extra)
-		saveEntry((message, (tags, users, task, time, when)))
-		self.redirect("/")
+                git_url = self.get_argument("git_url", None)
+                if git_url is not None:
+                        tmpd = git.op.clone(git_url)
+                        commits = git.op.log(tmpd)
+                        for commit in commits:
+                                task = False
+                                users = [commit[1]]
+                                message = commit[3]
+                                when = parse(commit[2], fuzzy=True)
+                                tags = [word[1:] for word in message if word[0] == "#"]
+                                # add commit hash as a tag
+                                tags.append(commit[0])
+                                # add name of the repo as a tag
+                                # (assumes it is the basename of the path)
+                                tags.append(os.path.basename(git_url).split('.git')[0])
+                                time = False
+                                saveEntry((message, (tags, users, task, time, when)))
+                else:
+                        message = self.get_argument("message")
+                        extra = self.get_argument("extra", "")
+                        (tags, users, task, time, when) = parseExtra(extra)
+                        saveEntry((message, (tags, users, task, time, when)))
+                self.redirect("/")
 
 class ArchiveHandler(tornado.web.RequestHandler):
 	def get_entries(self, days):
@@ -110,12 +132,17 @@ class ArchiveHandler(tornado.web.RequestHandler):
 
 	def get(self):
 		entries = self.get_entries(7)
-		self.render('archive.html', entries = entries, today = datetime.date.today())
+		self.render('archive.html', entries = entries, today = datetime.date.today(), days = ARCHIVE_DAYS)
+
+        def post(self):
+                days = int(self.get_argument("days", ARCHIVE_DAYS))
+ 		entries = self.get_entries(days)
+ 		self.render('archive.html', entries = entries, today = datetime.date.today(), days = days)
 
 class EmailHandler(ArchiveHandler):
 	def get(self):
-		entries = self.get_entries(7)
-				
+		entries = self.get_entries(ARCHIVE_DAYS)
+
 		loader = tornado.template.Loader("./")
 		html_body = loader.load("archive.html").generate(entries = entries, today = datetime.date.today())
 
@@ -130,7 +157,7 @@ class EmailHandler(ArchiveHandler):
 		s.sendmail(SENDGRID_FROM, SENDGRID_TO, msg.as_string())
 		s.quit()
 
-		self.render('archive.html', entries = entries, today = datetime.date.today())
+		self.render('archive.html', entries = entries, today = datetime.date.today(), days = ARCHIVE_DAYS)
 
 def parseExtra(string):
 	tags = []
