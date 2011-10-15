@@ -82,7 +82,13 @@ textarea:focus {
 <form name="otherform" method="post" action="/">
   <div class="wrapper">
     Git URL:
-    <input type="text" name="git_url"/>
+    <input type="text" name="git_url"/><br/>
+    Filter by:
+    <select name="filter_opt">
+      <option value="none" selected="selected">Nothing</option>
+      <option value="--author">Author</option>
+    </select>
+    <input type="text" name="filter_s"/>
     </div>
     <div>
     <input type="submit" value="Import Git" />
