@@ -73,8 +73,14 @@ class MainHandler(tornado.web.RequestHandler):
 	def post(self):
                 git_url = self.get_argument("git_url", None)
                 if git_url is not None:
+                        filter_opt = self.get_argument("filter_opt")
+                        filter_s = self.get_argument("filter_s", None)
+                        # sanitize filter_opt
+                        if filter_opt == "none": filter_opt = None
+
                         tmpd = git.op.clone(git_url)
-                        commits = git.op.log(tmpd)
+                        commits = git.op.log(tmpd, filter_opt=filter_opt,
+                                             filter_s=filter_s)
                         for commit in commits:
                                 task = False
                                 users = [commit[1]]

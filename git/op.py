@@ -10,15 +10,20 @@ def clone(repo_url):
         return tmpd
     return None
 
-def log(tmpd):
+def log(tmpd, filter_opt=None, filter_s=None):
     """Get the commits in the following format:
 %h ::: %an ::: %aD ::: %s ::: %d
 Check the PRETTY FORMATS section in git log help.
 """
     commits = None
+    git_cmd = ['git', '--no-pager', 'log',
+               '--pretty=format:"%h ::: %an ::: %aD ::: %s ::: %d"']
+
+    if filter_opt is not None and filter_s is not None:
+        git_cmd.append('%s=%s' % (filter_opt, filter_s))
+
     commits_proc = subprocess.Popen(
-        ['git', '--no-pager', 'log', '--pretty=format:"%h ::: %an ::: %aD ::: %s ::: %d"'],
-        stdout=subprocess.PIPE, close_fds=True, cwd=tmpd)
+        git_cmd, stdout=subprocess.PIPE, close_fds=True, cwd=tmpd)
 
     stdout = commits_proc.communicate()[0]
 
